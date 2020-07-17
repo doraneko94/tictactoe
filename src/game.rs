@@ -1,5 +1,7 @@
 use ndarray::*;
 use crate::mchs::*;
+use crate::mchs_net::*;
+use crate::net::*;
 
 pub const LINES: [(usize, usize, usize); 8] = [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)];
 
@@ -182,6 +184,23 @@ impl Game {
         
         let code = self.code;
         let mov: usize = mchs.search(code, 16000);
+        println!("{}", mov);
+        self.next(code, mov)
+    }
+
+    pub fn cpu_net(&mut self, mchs: &mut MCHSNet, net: &Net, train: bool) -> Result<(i32, i8), &str>  {
+        let code = self.code;
+        let mov: usize = mchs.search(code, 160, net, train);
+        self.next(code, mov)
+    }
+
+    pub fn cpu_net_vs(&mut self, mchs: &mut MCHSNet, net: &Net, train: bool) -> Result<(i32, i8), &str>  {
+        self.view();
+        let turn = turn(self.code);
+        println!("Turn '{}', move: ", xo(turn as i8));
+        
+        let code = self.code;
+        let mov: usize = mchs.search(code, 160, net, train);
         println!("{}", mov);
         self.next(code, mov)
     }
